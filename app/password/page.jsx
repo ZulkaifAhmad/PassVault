@@ -9,7 +9,6 @@ export default function PasswordsPage() {
   const { user } = useUser();
 
   const [open, setOpen] = useState(false);
-
   const [visibleId, setVisibleId] = useState(null);
 
   const passwords = user?.unsafeMetadata?.passwords || [];
@@ -22,12 +21,11 @@ export default function PasswordsPage() {
     await user.update({
       unsafeMetadata: { passwords: newData },
     });
-    console.log("Updated passwords:", newData);
+
     reset();
     setOpen(false);
   };
 
-  // ✅ Delete password
   const deletePassword = async (id) => {
     const newData = passwords.filter((p) => p.id !== id);
 
@@ -35,43 +33,41 @@ export default function PasswordsPage() {
       unsafeMetadata: { passwords: newData },
     });
 
-    // If deleted one was visible → reset
-    if (visibleId === id) {
-      setVisibleId(null);
-    }
+    if (visibleId === id) setVisibleId(null);
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-gray-50 p-4 sm:p-6">
+      <div className="max-w-5xl mx-auto">
+
         {/* Header */}
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-semibold text-gray-800">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-6">
+          <h1 className="text-xl sm:text-2xl font-semibold text-gray-800">
             Password Manager
           </h1>
 
           <button
             onClick={() => setOpen(true)}
-            className="bg-black text-white px-4 py-2 rounded-lg text-sm"
+            className="bg-black text-white px-4 py-2 rounded-lg text-sm w-full sm:w-auto"
           >
             Add Password
           </button>
         </div>
 
-        {/* Table */}
-        <div className="bg-white shadow-sm rounded-xl border">
+        {/* Table wrapper for responsiveness */}
+        <div className="bg-white shadow-sm rounded-xl border overflow-x-auto">
           {passwords.length === 0 ? (
             <p className="text-gray-500 p-6 text-center">
               No passwords saved yet
             </p>
           ) : (
-            <table className="w-full text-sm">
+            <table className="w-full min-w-[600px] text-sm">
               <thead className="bg-gray-100 text-gray-600">
                 <tr>
                   <th className="p-3 text-left">Site</th>
                   <th className="p-3 text-left">Username</th>
                   <th className="p-3 text-left">Password</th>
-                  <th></th>
+                  <th className="p-3"></th>
                 </tr>
               </thead>
 
@@ -86,28 +82,25 @@ export default function PasswordsPage() {
                       {p.username}
                     </td>
 
-                    {/* ✅ Password Column */}
                     <td className="p-3 text-gray-500">
                       {visibleId === p.id ? (
-                        <>
-                          <span>{p.password}</span>
-
+                        <span className="flex items-center gap-2">
+                          {p.password}
                           <EyeOffIcon
-                            className="inline-block ml-2 cursor-pointer"
                             size={16}
+                            className="cursor-pointer"
                             onClick={() => setVisibleId(null)}
                           />
-                        </>
+                        </span>
                       ) : (
-                        <>
-                          <span>••••••••</span>
-
+                        <span className="flex items-center gap-2">
+                          ••••••••
                           <Eye
-                            className="inline-block ml-2 cursor-pointer"
                             size={16}
+                            className="cursor-pointer"
                             onClick={() => setVisibleId(p.id)}
                           />
-                        </>
+                        </span>
                       )}
                     </td>
 
@@ -129,8 +122,8 @@ export default function PasswordsPage() {
 
       {/* Modal */}
       {open && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center">
-          <div className="bg-white rounded-xl shadow-lg w-80 p-6">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-lg w-full max-w-sm p-5">
             <h2 className="text-lg font-semibold mb-4 text-gray-800">
               Add Password
             </h2>
