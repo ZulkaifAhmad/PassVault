@@ -4,10 +4,10 @@ import { useUser } from "@clerk/nextjs";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Eye, EyeOffIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function PasswordsPage() {
   const { user } = useUser();
-
   const [open, setOpen] = useState(false);
   const [visibleId, setVisibleId] = useState(null);
 
@@ -16,6 +16,12 @@ export default function PasswordsPage() {
   const { register, handleSubmit, reset } = useForm();
 
   const onSubmit = async (data) => {
+    
+    if (!user) {
+      setOpen(false);
+      return;
+    };
+
     const newData = [...passwords, { ...data, id: Date.now() }];
 
     await user.update({
